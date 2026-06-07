@@ -13,7 +13,8 @@
 #include <string.h>
 #include <netdb.h>
 #include <sys/errno.h>
-#include <termio.h>
+#include <termios.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <sys/param.h>
 #include <sys/file.h>
@@ -25,6 +26,47 @@
 /*
  * Global variables 
  */
+/*
+ * Data-file paths, populated by init_data_dir() at startup.
+ */
+char RECORD_FILE[512];
+char INDEX_FILE[512];
+char NEWS_FILE[512];
+char BADUSER_FILE[512];
+char LOG_FILE[512];
+char GAME_FILE[512];
+
+void show_online_users(int);    /* forward declaration */
+
+/*
+ * Resolve the data directory ($QKMJ_DATA_DIR, else $HOME/.qkmj), create it if
+ * needed, and build the per-file paths. No external setup or sudo required.
+ */
+void init_data_dir(void) {
+	char base[400];
+	const char *dir = getenv("QKMJ_DATA_DIR");
+
+	if (dir && dir[0]) {
+		strncpy(base, dir, sizeof(base) - 1);
+		base[sizeof(base) - 1] = 0;
+	} else {
+		const char *home = getenv("HOME");
+		if (!home || !home[0])
+			home = ".";
+		snprintf(base, sizeof(base), "%s/.qkmj", home);
+	}
+	if (mkdir(base, 0755) != 0 && errno != EEXIST)
+		printf("Warning: cannot create data dir %s\n", base);
+
+	snprintf(RECORD_FILE, sizeof(RECORD_FILE), "%s/qkmj.rec", base);
+	snprintf(INDEX_FILE, sizeof(INDEX_FILE), "%s/qkmj.inx", base);
+	snprintf(NEWS_FILE, sizeof(NEWS_FILE), "%s/news.txt", base);
+	snprintf(BADUSER_FILE, sizeof(BADUSER_FILE), "%s/baduser.txt", base);
+	snprintf(LOG_FILE, sizeof(LOG_FILE), "%s/qkmj.log", base);
+	snprintf(GAME_FILE, sizeof(GAME_FILE), "%s/qkmj_game.log", base);
+	printf("Data dir: %s\n", base);
+}
+
 int timeup = 0;
 extern int errno;
 fd_set rfds, afds;
@@ -1284,6 +1326,8 @@ int checkpasswd(char *passwd, char *test) {
 
 void main(int argc, char **argv) {
 	int i;
+
+	init_data_dir();
 
 	/*
 	 * Set fd to be the maximum number 

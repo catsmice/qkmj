@@ -106,6 +106,7 @@ init_socket(char *host,int portnum,int *sockfd)
   {
     return -1;
   }
+  return 0;
 }
 
 accept_new_client()

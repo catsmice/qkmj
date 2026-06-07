@@ -8,14 +8,19 @@
 #define ASK_MODE 1
 #define CMD_MODE 2
 
-#define RECORD_FILE "/var/qkrecord/qkmj.rec"
-#define INDEX_FILE "/var/qkrecord/qkmj.inx"
-#define NEWS_FILE "/var/qkrecord/news.txt"
-#define BADUSER_FILE "/var/qkrecord/baduser.txt"
-#define LOG_FILE "/var/qkrecord/qkmj.log"
-#define GAME_FILE "/var/qkrecord/qkmj_game.log"
+/*
+ * Data-file paths are built at runtime from the data directory:
+ * $QKMJ_DATA_DIR if set, otherwise $HOME/.qkmj (auto-created on startup).
+ * See init_data_dir() in mjgps.c.
+ */
+extern char RECORD_FILE[];
+extern char INDEX_FILE[];
+extern char NEWS_FILE[];
+extern char BADUSER_FILE[];
+extern char LOG_FILE[];
+extern char GAME_FILE[];
 
-#define DEFAULT_RECORD_FILE "/var/qkrecord/qkmj.rec"
+#define DEFAULT_RECORD_FILE RECORD_FILE
 #define DEFAULT_MONEY 40000
 
 

@@ -131,5 +131,6 @@ extern char table_card[6][17];
 
 /* ------------------------------------------------------------------ */
 extern int leave();
+void show_card(char card, int x, int y, int type);  /* fwd decl: used before its definition in screen.c */
 
 
