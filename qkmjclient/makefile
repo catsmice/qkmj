@@ -3,7 +3,10 @@
 CC=gcc
 
 # OPTS= -finput-charset=UTF-8
-OPTS=-DNON_WINDOWS=1
+# -std=gnu89 + the -Wno-* flags let this K&R-era code build under modern
+# clang (macOS) and recent gcc, which otherwise treat implicit-int /
+# implicit-declaration / mismatched signal() handlers as hard errors.
+OPTS=-DNON_WINDOWS=1 -std=gnu89 -Wno-implicit-int -Wno-implicit-function-declaration -Wno-int-conversion -Wno-return-type -Wno-incompatible-function-pointer-types
 
 
 qkmj: qkmj.o input.o screen.o socket.o command.o message.o check.o checkscr.o card.o chkmake.o misc.o 

@@ -20,7 +20,7 @@ extern char BADUSER_FILE[];
 extern char LOG_FILE[];
 extern char GAME_FILE[];
 
-#define DEFAULT_RECORD_FILE RECORD_FILE
+#define DEFAULT_RECORD_FILE "qkmj.rec"  /* mjrec default; pass full path as argv[1], e.g. ~/.qkmj/qkmj.rec */
 #define DEFAULT_MONEY 40000
 
 
