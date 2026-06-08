@@ -3,15 +3,32 @@ OBJECT = test_gf.o rscoder.o rs.o
 TARGET = mjgps mjrec
 TARGETWIN = mjgpswin mjrecwin
 
-CC = gcc 
+CC = gcc
+
+UNAME_S := $(shell uname -s)
+
+# K&R-era C: relax diagnostics that modern clang / recent gcc treat as errors
+# (implicit int, implicit function declarations, etc.).
+WARN = -Wno-implicit-int -Wno-implicit-function-declaration \
+       -Wno-int-conversion -Wno-return-type
+
+CFLAGS = -O2 -fomit-frame-pointer -pipe -std=gnu89 $(WARN)
+
+# Platform differences:
+#   crypt() lives in libc on macOS but needs -lcrypt on Linux/BSD.
+#   Static linking (-static) is unsupported on macOS.
+ifeq ($(UNAME_S),Darwin)
+  CRYPTLIB =
+  RECSTATIC =
+else
+  CRYPTLIB = -lcrypt
+  RECSTATIC = -static
+endif
 
 #Cygwin version
-CWFLAGS = -O2  -mtune=generic -v -fomit-frame-pointer -pipe -lcrypt /bin/cygcrypt-0.dll 
+CWFLAGS = -O2  -mtune=generic -v -fomit-frame-pointer -pipe -lcrypt /bin/cygcrypt-0.dll
 
-#Linux Version
-CFLAGS = -O2  -mtune=generic -v -fomit-frame-pointer -pipe -lcrypt 
-  
-LDFLAGS = $(CFLAGS) -s
+LDFLAGS = $(CFLAGS)
 
 .c.o:
 	$(CC) -c $(CFLAGS) $<
@@ -19,11 +36,11 @@ LDFLAGS = $(CFLAGS) -s
 all: $(TARGET)
 
 mjgps: mjgps.h mjgps.c
-	$(CC) $(CFLAGS) -s -o $@ mjgps.c -lcrypt
+	$(CC) $(CFLAGS) -o $@ mjgps.c $(CRYPTLIB)
 	strip $@
 
 mjrec: mjgps.h mjrec.c
-	$(CC) $(CFLAGS) -static -s -N -o $@ mjrec.c
+	$(CC) $(CFLAGS) $(RECSTATIC) -o $@ mjrec.c
 	strip $@
 
 cygwin: $(TARGETWIN)
