@@ -361,8 +361,24 @@ void show_card(char card,int x,int y,int type)
   mvwaddstr(stdscr,y,x,"  "); 
   wrefresh(stdscr);
   wmove(stdscr,y,x);
-if(card==30 || card==40)
-  set_color(32,40);
+if(card==30)
+{
+  if(color)
+  {
+    wrefresh(stdscr);
+    printf("\033[30;42m");
+    fflush(stdout);
+  }
+}
+if(card==40)
+{
+  if(color)
+  {
+    wrefresh(stdscr);
+    printf("\033[4;30;42m");
+    fflush(stdout);
+  }
+}
 if(card>=1 && card<=9)
 {
   set_mode(1);
